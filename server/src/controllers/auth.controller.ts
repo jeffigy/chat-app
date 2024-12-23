@@ -1,16 +1,26 @@
 import { Request, Response } from "express";
-import { signUpSchema } from "../schemas/auth.schema";
+import {
+  logInSchema,
+  logOutSchema,
+  signUpSchema,
+} from "../schemas/auth.schema";
 import User from "../models/user.model";
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../lib/tokenGenerator";
+import { NODE_ENV } from "../utils/config";
 
 export const signup = async (req: Request, res: Response) => {
   const { error } = signUpSchema.validate(req.body);
-  const { email, fullName, password } = req.body;
 
   if (error) {
     res.status(400).json({ message: error.message });
     return;
   }
+
+  const { email, fullName, password } = req.body;
 
   const user = await User.findOne({ email });
 
@@ -27,14 +37,54 @@ export const signup = async (req: Request, res: Response) => {
     password: hashedPwd,
   });
 
-  // const refreshToken = sign
-  res.json(newUser);
+  generateRefreshToken({ userId: newUser._id.toString() }, res);
+  const accessToken = generateAccessToken({ userId: newUser._id.toString() });
+  res.status(201).json({ accessToken });
 };
 
 export const login = async (req: Request, res: Response) => {
-  res.json({ message: "login" });
+  const { error } = logInSchema.validate(req.body);
+
+  if (error) {
+    res.status(400).json({ message: error.message });
+    return;
+  }
+
+  const { email, password } = req.body;
+
+  const foundUser = await User.findOne({ email });
+  console.log(foundUser);
+
+  if (!foundUser) {
+    res.status(401).json({ message: "Incorrect email or password" });
+    return;
+  }
+
+  const matchPwd = await compare(password, foundUser.password);
+
+  if (!matchPwd) {
+    res.status(401).json({ message: "Incorrect email or password" });
+    return;
+  }
+
+  generateRefreshToken({ userId: foundUser._id.toString() }, res);
+  const accessToken = generateAccessToken({ userId: foundUser._id.toString() });
+
+  res.json({ accessToken });
 };
 
 export const logout = async (req: Request, res: Response) => {
-  res.json({ message: "logout" });
+  const { error } = logOutSchema.validate(req.cookies);
+
+  if (error) {
+    res.status(400).json({ message: "No token provided" });
+    return;
+  }
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    secure: NODE_ENV !== "development",
+    sameSite: "strict",
+  });
+
+  res.json({ message: "Logged out successfully" });
 };
