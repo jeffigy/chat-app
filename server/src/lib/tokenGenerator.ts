@@ -26,3 +26,30 @@ export const generateRefreshToken = (payload: TokenPayload, res: Response) => {
 
   return refreshToken;
 };
+
+export const verifyToken = ({
+  token,
+  req,
+  res,
+}: {
+  token: string;
+  req: Request;
+  res: Response;
+}) => {
+  verify(token, ACCESS_TOKEN_SECRET, (error, decoded) => {
+    if (error) {
+      res.status(403).json({ message: "Forbidden" });
+      return;
+    }
+
+    const payload = decoded as JwtPayload & {
+      userId: string;
+    };
+
+    console.log({ payload });
+
+    if (payload) {
+      req.userId = payload.userId;
+    }
+  });
+};
