@@ -1,5 +1,5 @@
 import { Router } from "express";
-import validateToken from "../middlewares/verifyJWT";
+import validateToken from "../middlewares/validateToken";
 import { updateProfile } from "../controllers/user.controller";
 
 const userRoute = Router();
