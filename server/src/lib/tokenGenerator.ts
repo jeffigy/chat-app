@@ -1,20 +1,22 @@
-import { sign } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 import {
   ACCESS_TOKEN_SECRET,
   NODE_ENV,
   REFRESH_TOKEN_SECRET,
 } from "../utils/config";
-import { Response } from "express";
+import { Request, Response } from "express";
 
-type TokenPayload = {
-  userId: string;
-};
-
-export const generateAccessToken = (payload: TokenPayload) => {
+export const generateAccessToken = ({ payload }: { payload: string }) => {
   return sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 };
 
-export const generateRefreshToken = (payload: TokenPayload, res: Response) => {
+export const generateRefreshToken = ({
+  payload,
+  res,
+}: {
+  payload: string;
+  res: Response;
+}) => {
   const refreshToken = sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
   res.cookie("jwt", refreshToken, {

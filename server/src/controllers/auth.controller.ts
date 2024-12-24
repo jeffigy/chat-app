@@ -37,8 +37,8 @@ export const signup = async (req: Request, res: Response) => {
     password: hashedPwd,
   });
 
-  generateRefreshToken({ userId: newUser._id.toString() }, res);
-  const accessToken = generateAccessToken({ userId: newUser._id.toString() });
+  generateRefreshToken({ payload: newUser._id.toString(), res });
+  const accessToken = generateAccessToken({ payload: newUser._id.toString() });
   res.status(201).json({ accessToken });
 };
 
@@ -67,8 +67,10 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  generateRefreshToken({ userId: foundUser._id.toString() }, res);
-  const accessToken = generateAccessToken({ userId: foundUser._id.toString() });
+  generateRefreshToken({ payload: foundUser._id.toString(), res });
+  const accessToken = generateAccessToken({
+    payload: foundUser._id.toString(),
+  });
 
   res.json({ accessToken });
 };
