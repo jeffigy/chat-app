@@ -90,3 +90,7 @@ export const logout = async (req: Request, res: Response) => {
 
   res.json({ message: "Logged out successfully" });
 };
+
+export const checkAuth = (req: Request, res: Response) => {
+  res.status(200).json(req.userId);
+};
