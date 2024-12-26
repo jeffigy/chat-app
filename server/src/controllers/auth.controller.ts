@@ -11,6 +11,7 @@ import {
   generateRefreshToken,
 } from "../lib/tokenGenerator";
 import { NODE_ENV } from "../utils/config";
+import { UserType } from "../types/user";
 
 export const signup = async (req: Request, res: Response) => {
   const { error } = signUpSchema.validate(req.body);
@@ -37,8 +38,10 @@ export const signup = async (req: Request, res: Response) => {
     password: hashedPwd,
   });
 
-  generateRefreshToken({ payload: newUser._id.toString(), res });
-  const accessToken = generateAccessToken({ payload: newUser._id.toString() });
+  const payload = newUser.toJSON<UserType>();
+
+  generateRefreshToken({ payload, res });
+  const accessToken = generateAccessToken({ payload });
   res.status(201).json({ accessToken });
 };
 
@@ -53,7 +56,6 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const foundUser = await User.findOne({ email });
-  console.log(foundUser);
 
   if (!foundUser) {
     res.status(401).json({ message: "Incorrect email or password" });
@@ -67,9 +69,11 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  generateRefreshToken({ payload: foundUser._id.toString(), res });
+  const payload = foundUser.toJSON<UserType>();
+
+  generateRefreshToken({ payload, res });
   const accessToken = generateAccessToken({
-    payload: foundUser._id.toString(),
+    payload,
   });
 
   res.json({ accessToken });
@@ -92,5 +96,5 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const checkAuth = (req: Request, res: Response) => {
-  res.status(200).json(req.userId);
+  res.status(200).json(req.user);
 };

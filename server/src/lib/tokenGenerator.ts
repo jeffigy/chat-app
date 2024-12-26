@@ -5,19 +5,22 @@ import {
   REFRESH_TOKEN_SECRET,
 } from "../utils/config";
 import { Request, Response } from "express";
+import { UserType } from "../types/user";
 
-export const generateAccessToken = ({ payload }: { payload: string }) => {
-  return sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+export const generateAccessToken = ({ payload }: { payload: UserType }) => {
+  return sign({ UserInfo: payload }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 };
 
 export const generateRefreshToken = ({
   payload,
   res,
 }: {
-  payload: string;
+  payload: UserType;
   res: Response;
 }) => {
-  const refreshToken = sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  const refreshToken = sign({ UserInfo: payload }, REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
 
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
@@ -45,13 +48,13 @@ export const verifyToken = ({
     }
 
     const payload = decoded as JwtPayload & {
-      userId: string;
+      UserInfo: UserType;
     };
 
     console.log({ payload });
 
     if (payload) {
-      req.userId = payload.userId;
+      req.user = payload.UserInfo;
     }
   });
 };
