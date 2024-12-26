@@ -4,16 +4,16 @@ import Message from "../models/message.model";
 import cloudinary from "../lib/cloudinary";
 
 export const getChatList = async (req: Request, res: Response) => {
-  const userId = req.userId;
+  const { id } = req.user;
 
-  const getChatList = await User.find({ _id: { $ne: userId } });
+  const getChatList = await User.find({ _id: { $ne: id } });
 
   res.status(200).json(getChatList);
 };
 
 export const getMessages = async (req: Request, res: Response) => {
   const { id: userChatId } = req.params;
-  const authUserId = req.userId;
+  const { id: authUserId } = req.user;
 
   const messages = await Message.find({
     $or: [
@@ -27,7 +27,7 @@ export const getMessages = async (req: Request, res: Response) => {
 export const sendMessage = async (req: Request, res: Response) => {
   const { text, image } = req.body;
   const { id: receiverId } = req.params;
-  const senderId = req.userId;
+  const { id: senderId } = req.user;
 
   let imageUrl;
   if (image) {

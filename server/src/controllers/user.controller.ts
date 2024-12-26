@@ -4,7 +4,7 @@ import User from "../models/user.model";
 
 export const updateProfile = async (req: Request, res: Response) => {
   const { profilePic } = req.body;
-  const userId = req.userId;
+  const { id } = req.user;
 
   if (!profilePic) {
     res.status(400).json({ message: "Profile pic is required" });
@@ -14,7 +14,7 @@ export const updateProfile = async (req: Request, res: Response) => {
   const { secure_url } = await cloudinary.uploader.upload(profilePic);
 
   const updatedUser = await User.findByIdAndUpdate(
-    userId,
+    id,
     {
       profilePic: secure_url,
     },
