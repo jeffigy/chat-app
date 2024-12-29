@@ -1,16 +1,19 @@
 import { Route, Routes } from "react-router";
-import Layout from "@/components/Layout";
-import HomePage from "@/pages/HomePage";
-import SignUpPage from "@/pages/auth/SignUpPage";
-import LogInPage from "@/pages/auth/LogInPage";
+import AuthPage from "./pages/AuthPage";
+import RootLayout from "@/components/RootLayout";
+import AuthLayout from "./components/AuthLayout";
+import MessagesPage from "./pages/MessagesPage";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="signup" element={<SignUpPage />} />
-        <Route path="login" element={<LogInPage />} />
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<AuthPage />} />
+        <Route element={<AuthLayout />}>
+          <Route path="messages">
+            <Route index element={<MessagesPage />}></Route>
+          </Route>
+        </Route>
       </Route>
     </Routes>
   );
