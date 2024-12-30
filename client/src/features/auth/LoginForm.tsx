@@ -1,30 +1,58 @@
-import { MessagesSquare } from "lucide-react";
+import { Loader } from "lucide-react";
+import { useLoginMutation } from "./authMutation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 const LoginForm = () => {
-  return (
-    <>
-      <div className="flex flex-col items-center">
-        <div className="rounded-md bg-base-100 p-3">
-          <MessagesSquare />
-        </div>
-        <h2 className="text-3xl font-bold">Welcome Back</h2>
-        <p>Sign in to your account</p>
-      </div>
-      <div className="w-full max-w-sm space-y-8">
-        <input
-          type="text"
-          className="input input-bordered w-full"
-          placeholder="Email"
-        />
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { isPending, mutateAsync: login } = useLoginMutation();
 
-        <input
-          type="text"
-          className="input input-bordered w-full"
-          placeholder="Password"
-        />
-        <button className="btn btn-primary w-full">Sign In</button>
-      </div>
-    </>
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const { accessToken } = await login({ email, password });
+      toast.success(accessToken);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.message);
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handleLogin} className="w-full max-w-sm space-y-8">
+      <input
+        value={email}
+        onChange={({ target }) => setEmail(target.value)}
+        type="text"
+        className="input input-bordered w-full"
+        placeholder="Email"
+      />
+
+      <input
+        value={password}
+        onChange={({ target }) => setPassword(target.value)}
+        type="text"
+        className="input input-bordered w-full"
+        placeholder="Password"
+      />
+      <button
+        disabled={!email || !password}
+        type="submit"
+        className="btn btn-primary w-full"
+      >
+        {isPending ? (
+          <>
+            <Loader className="animate-spin" /> Signing in...
+          </>
+        ) : (
+          "Sign In"
+        )}
+      </button>
+    </form>
   );
 };
 

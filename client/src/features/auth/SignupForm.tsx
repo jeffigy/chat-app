@@ -1,34 +1,62 @@
-import { MessagesSquare } from "lucide-react";
+import { AxiosError } from "axios";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useSignupMutation } from "./authMutation";
+import { Loader } from "lucide-react";
 
 const SignupForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const { isPending, mutateAsync: signup } = useSignupMutation();
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const { accessToken } = await signup({ fullName, email, password });
+      toast.success(accessToken);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.message);
+      }
+    }
+  };
+
   return (
-    <>
-      <div className="flex flex-col items-center">
-        <div className="rounded-md bg-base-100 p-3">
-          <MessagesSquare />
-        </div>
-        <h2 className="text-3xl font-bold">Create account</h2>
-        <p>Get started with your free account</p>
-      </div>
-      <div className="w-full max-w-sm space-y-8">
-        <input
-          type="text"
-          className="input input-bordered w-full"
-          placeholder="Email"
-        />
-        <input
-          type="text"
-          className="input input-bordered w-full"
-          placeholder="Name"
-        />
-        <input
-          type="text"
-          className="input input-bordered w-full"
-          placeholder="Password"
-        />
-        <button className="btn btn-primary w-full">Create Account</button>
-      </div>
-    </>
+    <form onSubmit={handleSignup} className="w-full max-w-sm space-y-8">
+      <input
+        value={fullName}
+        onChange={({ target }) => setFullName(target.value)}
+        type="text"
+        className="input input-bordered w-full"
+        placeholder="Full Name"
+      />
+      <input
+        value={email}
+        onChange={({ target }) => setEmail(target.value)}
+        type="text"
+        className="input input-bordered w-full"
+        placeholder="Email"
+      />
+
+      <input
+        value={password}
+        onChange={({ target }) => setPassword(target.value)}
+        type="text"
+        className="input input-bordered w-full"
+        placeholder="Password"
+      />
+      <button className="btn btn-primary w-full">
+        {isPending ? (
+          <>
+            <Loader className="animate-spin" /> Creating Account...
+          </>
+        ) : (
+          "Create Account"
+        )}
+      </button>
+    </form>
   );
 };
 
