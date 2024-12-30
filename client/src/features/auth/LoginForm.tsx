@@ -3,8 +3,12 @@ import { useLoginMutation } from "./authMutation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import useStore from "@/store/useStore";
+import { jwtDecode } from "jwt-decode";
+import { DecodedToken } from "@/types/auth";
 
 const LoginForm = () => {
+  const { setCredentials } = useStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { isPending, mutateAsync: login } = useLoginMutation();
@@ -13,8 +17,15 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const { accessToken } = await login({ email, password });
-      toast.success(accessToken);
+      await login(
+        { email, password },
+        {
+          onSuccess: (data) => {
+            const { UserInfo } = jwtDecode<DecodedToken>(data.accessToken);
+            setCredentials(UserInfo, data.accessToken);
+          },
+        },
+      );
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.message);

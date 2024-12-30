@@ -3,8 +3,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useSignupMutation } from "./authMutation";
 import { Loader } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
+import { DecodedToken } from "@/types/auth";
+import useStore from "@/store/useStore";
 
 const SignupForm = () => {
+  const { setCredentials } = useStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -14,8 +18,15 @@ const SignupForm = () => {
     e.preventDefault();
 
     try {
-      const { accessToken } = await signup({ fullName, email, password });
-      toast.success(accessToken);
+      await signup(
+        { fullName, email, password },
+        {
+          onSuccess: (data) => {
+            const { UserInfo } = jwtDecode<DecodedToken>(data.accessToken);
+            setCredentials(UserInfo, data.accessToken);
+          },
+        },
+      );
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.message);
@@ -47,7 +58,10 @@ const SignupForm = () => {
         className="input input-bordered w-full"
         placeholder="Password"
       />
-      <button className="btn btn-primary w-full">
+      <button
+        disabled={!email || !password || !fullName}
+        className="btn btn-primary w-full"
+      >
         {isPending ? (
           <>
             <Loader className="animate-spin" /> Creating Account...
