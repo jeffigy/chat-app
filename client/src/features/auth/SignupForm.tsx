@@ -3,8 +3,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useSignupMutation } from "./authMutation";
 import { Loader } from "lucide-react";
-import { jwtDecode } from "jwt-decode";
-import { DecodedToken } from "@/types/auth";
 import useStore from "@/store/useStore";
 
 const SignupForm = () => {
@@ -22,8 +20,7 @@ const SignupForm = () => {
         { fullName, email, password },
         {
           onSuccess: (data) => {
-            const { UserInfo } = jwtDecode<DecodedToken>(data.accessToken);
-            setCredentials(UserInfo, data.accessToken);
+            setCredentials(data.accessToken);
           },
         },
       );

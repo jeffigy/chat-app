@@ -4,8 +4,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import useStore from "@/store/useStore";
-import { jwtDecode } from "jwt-decode";
-import { DecodedToken } from "@/types/auth";
 
 const LoginForm = () => {
   const { setCredentials } = useStore();
@@ -21,8 +19,7 @@ const LoginForm = () => {
         { email, password },
         {
           onSuccess: (data) => {
-            const { UserInfo } = jwtDecode<DecodedToken>(data.accessToken);
-            setCredentials(UserInfo, data.accessToken);
+            setCredentials(data.accessToken);
           },
         },
       );

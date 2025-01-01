@@ -1,4 +1,6 @@
+import { DecodedToken } from "@/types/auth";
 import { User } from "@/types/user";
+import { jwtDecode } from "jwt-decode";
 import { StateCreator } from "zustand";
 
 type AuthState = {
@@ -8,7 +10,8 @@ type AuthState = {
 };
 
 type ActionState = {
-  setCredentials: (authUser: User, token: string) => void;
+  setCredentials: (token: string) => void;
+  clearCredentials: () => void;
 };
 
 export type AuthSlice = AuthState & ActionState;
@@ -21,8 +24,20 @@ const initialState: AuthState = {
 
 const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   ...initialState,
-  setCredentials: (authUser: User, token: string) =>
-    set({ authUser, token, isAuthenticated: true }),
+  setCredentials: (token: string) => {
+    const { UserInfo } = jwtDecode<DecodedToken>(token);
+    set({
+      authUser: UserInfo,
+      token,
+      isAuthenticated: true,
+    });
+  },
+  clearCredentials: () =>
+    set({
+      authUser: null,
+      token: null,
+      isAuthenticated: false,
+    }),
 });
 
 export default createAuthSlice;
