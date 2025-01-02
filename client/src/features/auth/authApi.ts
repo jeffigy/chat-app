@@ -10,3 +10,7 @@ export const login = async (credentials: LoginCredentials) => {
 export const signup = async (credentials: SignupCredentials) => {
   return (await axiosInstance.post(`${BASE_URL}/signup`, credentials)).data;
 };
+
+export const refresh = async () => {
+  return (await axiosInstance.get(`${BASE_URL}/refresh`)).data;
+};

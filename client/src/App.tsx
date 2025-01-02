@@ -5,6 +5,7 @@ import AuthLayout from "./components/AuthLayout";
 import MessagesPage from "./pages/MessagesPage";
 import RequireAuth from "./features/auth/RequireAuth";
 import useStore from "./store/useStore";
+import PersistAuth from "./features/auth/PersistAuth";
 
 const App = () => {
   const { isAuthenticated } = useStore();
@@ -17,10 +18,12 @@ const App = () => {
             isAuthenticated ? <Navigate to={"/messages"} /> : <AuthPage />
           }
         />
-        <Route element={<RequireAuth />}>
-          <Route element={<AuthLayout />}>
-            <Route path="messages">
-              <Route index element={<MessagesPage />}></Route>
+        <Route element={<PersistAuth />}>
+          <Route element={<RequireAuth />}>
+            <Route element={<AuthLayout />}>
+              <Route path="messages">
+                <Route index element={<MessagesPage />}></Route>
+              </Route>
             </Route>
           </Route>
         </Route>
