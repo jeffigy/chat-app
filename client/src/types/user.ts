@@ -3,6 +3,6 @@ export type User = {
   email: string;
   fullName: string;
   profilePic?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };

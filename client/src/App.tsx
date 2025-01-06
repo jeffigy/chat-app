@@ -6,6 +6,8 @@ import MessagesPage from "./pages/MessagesPage";
 import RequireAuth from "./features/auth/RequireAuth";
 import useStore from "./store/useStore";
 import PersistAuth from "./features/auth/PersistAuth";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
 
 const App = () => {
   const { isAuthenticated } = useStore();
@@ -23,6 +25,13 @@ const App = () => {
             <Route element={<AuthLayout />}>
               <Route path="messages">
                 <Route index element={<MessagesPage />}></Route>
+              </Route>
+
+              <Route path="profile">
+                <Route index element={<ProfilePage />} />
+              </Route>
+              <Route path="settings">
+                <Route index element={<SettingsPage />} />
               </Route>
             </Route>
           </Route>

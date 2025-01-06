@@ -1,7 +1,8 @@
 import Pattern from "@/assets/auth-pattern.svg";
+import LogoComponent from "@/components/LogoComponent";
 import LoginForm from "@/features/auth/LoginForm";
 import SignupForm from "@/features/auth/SignupForm";
-import { MessagesSquare } from "lucide-react";
+
 import { useState } from "react";
 
 const AuthPage = () => {
@@ -16,9 +17,7 @@ const AuthPage = () => {
     <div className="flex h-screen w-full flex-col lg:flex-row">
       <div className="flex w-full grow flex-col items-center justify-center space-y-10 p-10">
         <div className="flex flex-col items-center">
-          <div className="rounded-md bg-base-100 p-3">
-            <MessagesSquare />
-          </div>
+          <LogoComponent />
           <h2 className="text-3xl font-bold">
             {isLogin ? "Welcome Back" : "Create account"}
           </h2>
