@@ -9,6 +9,7 @@ import { compare, hash } from "bcrypt";
 import {
   generateAccessToken,
   generateRefreshToken,
+  verifyRefreshToken,
 } from "../lib/tokenGenerator";
 import { NODE_ENV } from "../utils/config";
 import { UserType } from "../types/user";
@@ -95,6 +96,13 @@ export const logout = async (req: Request, res: Response) => {
   res.json({ message: "Logged out successfully" });
 };
 
-export const checkAuth = (req: Request, res: Response) => {
-  res.status(200).json(req.user);
+export const refresh = (req: Request, res: Response) => {
+  const { jwt } = req.cookies;
+
+  if (!jwt) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  verifyRefreshToken({ token: jwt, res });
 };

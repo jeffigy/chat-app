@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyToken } from "../lib/tokenGenerator";
+import { verifyAccessToken } from "../lib/tokenGenerator";
 
 const validateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -14,9 +14,7 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
   }
 
   const token = authHeader!.split(" ")[1];
-  verifyToken({ token, req, res });
-
-  next();
+  verifyAccessToken({ token, req, res, next });
 };
 
 export default validateToken;
