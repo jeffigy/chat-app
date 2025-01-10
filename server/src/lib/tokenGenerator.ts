@@ -52,7 +52,6 @@ export const verifyAccessToken = ({
     }
 
     req.user = (decoded as DecodedToken).UserInfo;
-    console.log(req.user);
 
     next();
   });
