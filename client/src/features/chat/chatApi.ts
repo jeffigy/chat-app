@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 import useStore from "@/store/useStore";
+import { SendMessage } from "@/types/message";
 
 const BASE_URL = "/api/messages";
 export const fetchChatList = async () => {
@@ -7,12 +8,11 @@ export const fetchChatList = async () => {
 };
 
 export const fetchChatMessages = async ({ id }: { id: string | undefined }) => {
-  return await axiosInstance.get(`${BASE_URL}/${id}`);
+  return (await axiosInstance.get(`${BASE_URL}/${id}`)).data;
 };
 
-export const sendMessage = async ({ data }: { data: any }) => {
+export const sendMessage = async ({ data }: { data: SendMessage }) => {
   const { selectedUser } = useStore.getState();
-  console.log(selectedUser?.id);
 
   return (await axiosInstance.post(`${BASE_URL}/${selectedUser?.id}`, data))
     .data;

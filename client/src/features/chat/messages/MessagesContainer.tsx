@@ -1,13 +1,29 @@
 import { useChatMessages } from "../chatQueries";
+import useStore from "@/store/useStore";
+import Message from "./Message";
+import { Message as MessageType } from "@/types/message";
 
 const MessagesContainer = () => {
-  const { isFetching, data } = useChatMessages();
+  const { authUser, selectedUser } = useStore();
+  const { isLoading, data: messages } = useChatMessages();
 
-  if (isFetching) return <MessageSkeleton />;
-  console.log(data);
+  if (isLoading) return <MessageSkeleton />;
+
+  if (!messages)
+    return (
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+        {" "}
+        <p>You don't have any messages yet</p>
+      </div>
+    );
+
+  if (!authUser || !selectedUser) return null;
+
   return (
     <div className="flex-1 space-y-4 overflow-y-auto p-4">
-      MessagesContainer
+      {messages.map((message: MessageType) => (
+        <Message key={message.id} message={message} />
+      ))}
     </div>
   );
 };
