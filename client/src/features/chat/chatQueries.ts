@@ -15,7 +15,7 @@ export function useChatList() {
 export function useChatMessages() {
   const { isAuthenticated, selectedUser } = useStore();
   return useQuery({
-    queryKey: ["chat-messages"],
+    queryKey: ["chat-messages", selectedUser?.id],
     queryFn: () => fetchChatMessages({ id: selectedUser?.id }),
     placeholderData: keepPreviousData,
     enabled: isAuthenticated,

@@ -1,7 +1,6 @@
 import { User } from "@/types/user";
 import { useChatList } from "./chatQueries";
 import Chat from "./Chat";
-import { Users } from "lucide-react";
 
 const ChatList = () => {
   const { data, isLoading, isError, error } = useChatList();
@@ -12,7 +11,7 @@ const ChatList = () => {
   return (
     <div className="w-full overflow-y-auto py-3">
       {data.map((user: User) => (
-        <Chat user={user} />
+        <Chat key={user.id} user={user} />
       ))}
     </div>
   );
@@ -24,14 +23,6 @@ const SidebarSkeleton = () => {
 
   return (
     <aside className="flex h-full w-20 flex-col border-r border-base-300 transition-all duration-200 lg:w-72">
-      {/* Header */}
-      <div className="w-full border-b border-base-300 p-5">
-        <div className="flex items-center gap-2">
-          <Users className="h-6 w-6" />
-          <span className="hidden font-medium lg:block">Contacts</span>
-        </div>
-      </div>
-
       {/* Skeleton Contacts */}
       <div className="w-full overflow-y-auto py-3">
         {skeletonContacts.map((_, idx) => (
