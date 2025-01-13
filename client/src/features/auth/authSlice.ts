@@ -32,12 +32,7 @@ const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       isAuthenticated: true,
     });
   },
-  clearCredentials: () =>
-    set({
-      authUser: null,
-      token: null,
-      isAuthenticated: false,
-    }),
+  clearCredentials: () => set(initialState),
 });
 
 export default createAuthSlice;

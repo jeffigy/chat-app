@@ -1,63 +1,52 @@
 import useStore from "@/store/useStore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { useRefreshMutation } from "./authMutation";
+import { Loader } from "lucide-react";
 
 const PersistAuth = () => {
   const navigate = useNavigate();
   const { token, setCredentials } = useStore();
-  const effectRan = useRef(false);
-  const [trueSuccess, setTrueSuccess] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  const {
-    mutateAsync: refresh,
-    isPending,
-    isSuccess,
-    isError,
-    isIdle,
-    error,
-  } = useRefreshMutation();
+  const { mutateAsync: refresh, isPending } = useRefreshMutation();
 
   useEffect(() => {
-    const shouldRunEffect =
-      effectRan.current === true || process.env.NODE_ENV !== "developement";
+    let isMounted = true;
 
-    if (shouldRunEffect) {
-      async function verifyRefreshToken() {
-        console.log("verifying refresh token");
-
-        try {
-          await refresh(undefined, {
-            onSuccess: (data) => {
-              setCredentials(data.accessToken);
-            },
-          });
-          setTrueSuccess(true);
-        } catch (error: unknown) {
-          console.error("Token refresh failed:", error);
-        }
+    const verifyRefreshToken = async () => {
+      console.log("verifying refresh token");
+      try {
+        const data = await refresh();
+        setCredentials(data.accessToken); // Save the token
+      } catch (err) {
+        navigate("/", { replace: true }); // Redirect to login if refresh fails
+      } finally {
+        if (isMounted) setIsCheckingAuth(false); // Allow rendering to continue
       }
-      if (!token) verifyRefreshToken();
+    };
+
+    if (!token) {
+      verifyRefreshToken();
+    } else {
+      setIsCheckingAuth(false);
     }
 
     return () => {
-      effectRan.current = true;
+      isMounted = false;
     };
   }, []);
 
-  if (isPending) return <p>loading...</p>;
-  if (isError)
+  if (isCheckingAuth || isPending)
     return (
-      <p>
-        {`${error.message} - `}{" "}
-        <button onClick={() => navigate("/", { replace: true })}>
-          login again
-        </button>
-      </p>
+      <div className="flex h-screen items-center">
+        {" "}
+        <Loader className="mx-auto animate-spin" />
+      </div>
     );
 
-  if (isSuccess && trueSuccess) return <Outlet />;
-  if (token && isIdle) return <Outlet />;
+  // Render child routes
+  return <Outlet />;
 };
 
 export default PersistAuth;

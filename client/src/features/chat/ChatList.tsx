@@ -10,9 +10,7 @@ const ChatList = () => {
 
   return (
     <div className="w-full overflow-y-auto py-3">
-      {data.map((user: User) => (
-        <Chat key={user.id} user={user} />
-      ))}
+      {data && data.map((user: User) => <Chat key={user.id} user={user} />)}
     </div>
   );
 };
