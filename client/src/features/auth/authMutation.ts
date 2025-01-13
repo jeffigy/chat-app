@@ -22,3 +22,10 @@ export function useRefreshMutation() {
     mutationKey: ["refresh"],
   });
 }
+
+export function useLogoutMutation() {
+  return useMutation({
+    mutationFn: () => logout(),
+    mutationKey: ["logout"],
+  });
+}

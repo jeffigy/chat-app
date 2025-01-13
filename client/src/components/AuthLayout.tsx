@@ -1,6 +1,10 @@
-import { LogOut, Settings, UserRound } from "lucide-react";
-import { NavLink, Outlet } from "react-router";
+import { Loader, LogOut, Settings, UserRound } from "lucide-react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import LogoComponent from "./LogoComponent";
+import { useLogoutMutation } from "@/features/auth/authMutation";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
+import useStore from "@/store/useStore";
 
 type Nav = {
   to?: string;
@@ -8,23 +12,46 @@ type Nav = {
   label: string;
 };
 
+const navlist: Nav[] = [
+  {
+    icon: <Settings />,
+    label: "Settings",
+    to: "/settings",
+  },
+  {
+    icon: <UserRound />,
+    label: "Profile",
+    to: "/profile",
+  },
+];
+
 const AuthLayout = () => {
-  const navlist: Nav[] = [
-    {
-      icon: <Settings />,
-      label: "Settings",
-      to: "/settings",
-    },
-    {
-      icon: <UserRound />,
-      label: "Profile",
-      to: "/profile",
-    },
-    {
-      icon: <LogOut />,
-      label: "Logout",
-    },
-  ];
+  const { mutateAsync: logout, isPending } = useLogoutMutation();
+  const { clearCredentials } = useStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleLogout = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      await logout(undefined, {
+        onSuccess: (data) => {
+          clearCredentials();
+          toast.success(data.message);
+          navigate("/", {
+            replace: true,
+            state: {
+              from: location,
+            },
+          });
+        },
+      });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.message);
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -45,6 +72,10 @@ const AuthLayout = () => {
               to={nav.to}
             />
           ))}
+          <button onClick={handleLogout} className="btn">
+            {isPending ? <Loader className="animate-spin" /> : <LogOut />}
+            <p className="hidden md:block">Logout</p>
+          </button>
         </div>
       </header>
       <div className="pt-14">
