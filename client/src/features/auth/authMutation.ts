@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { login, refresh, signup } from "./authApi";
+import { login, logout, refresh, signup } from "./authApi";
 import { LoginCredentials, SignupCredentials } from "@/types/auth";
 
 export function useLoginMutation() {
