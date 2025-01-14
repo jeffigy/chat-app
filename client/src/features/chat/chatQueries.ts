@@ -3,7 +3,7 @@ import { fetchChatList, fetchChatMessages } from "./chatApi";
 import useStore from "@/store/useStore";
 
 export function useChatList() {
-  const { isAuthenticated } = useStore();
+  const { isAuthenticated } = useStore.getState();
   return useQuery({
     queryKey: ["chatlist"],
     queryFn: () => fetchChatList(),
@@ -13,7 +13,7 @@ export function useChatList() {
 }
 
 export function useChatMessages() {
-  const { isAuthenticated, selectedUser } = useStore();
+  const { isAuthenticated, selectedUser } = useStore.getState();
   return useQuery({
     queryKey: ["chat-messages", selectedUser?.id],
     queryFn: () => fetchChatMessages({ id: selectedUser?.id }),

@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import ChatContainer from "@/features/chat/ChatContainer";
 import useStore from "@/store/useStore";
+import { MessageSquare } from "lucide-react";
 
 const MessagesPage = () => {
   const { selectedUser } = useStore();
@@ -18,8 +19,6 @@ const MessagesPage = () => {
     </div>
   );
 };
-
-import { MessageSquare } from "lucide-react";
 
 const NoChatSelected = () => {
   return (

@@ -36,7 +36,8 @@ axiosInstance.interceptors.response.use(
         try {
           // Request a new access token using the refresh token
           const { data } = await axiosInstance.get("/api/auth/refresh");
-          setCredentials(data.acessToken);
+
+          setCredentials(data.accessToken);
 
           originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 
