@@ -2,18 +2,26 @@ import { useChatMessages } from "../chatQueries";
 import useStore from "@/store/useStore";
 import Message from "./Message";
 import { Message as MessageType } from "@/types/message";
+import { useEffect, useRef } from "react";
 
 const MessagesContainer = () => {
-  const { authUser, selectedUser } = useStore();
-  const { isLoading, data: messages } = useChatMessages();
+  const { authUser, selectedUser, messages } = useStore();
+  const { isLoading } = useChatMessages();
+  const messageEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   if (isLoading) return <MessageSkeleton />;
 
-  if (!messages)
+  if (messages.length === 0)
     return (
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {" "}
-        <p>You don't have any messages yet</p>
+        <p className="text-center">You don't have any messages yet</p>
       </div>
     );
 
@@ -22,7 +30,11 @@ const MessagesContainer = () => {
   return (
     <div className="flex-1 space-y-4 overflow-y-auto p-4">
       {messages.map((message: MessageType) => (
-        <Message key={message.id} message={message} />
+        <Message
+          messageEndRef={messageEndRef}
+          key={message.id}
+          message={message}
+        />
       ))}
     </div>
   );

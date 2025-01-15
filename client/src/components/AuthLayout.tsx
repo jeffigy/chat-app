@@ -5,6 +5,7 @@ import { useLogoutMutation } from "@/features/auth/authMutation";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import useStore from "@/store/useStore";
+import { disconnectSocket } from "@/lib/socket";
 
 type Nav = {
   to?: string;
@@ -27,7 +28,7 @@ const navlist: Nav[] = [
 
 const AuthLayout = () => {
   const { mutateAsync: logout, isPending } = useLogoutMutation();
-  const { clearCredentials } = useStore();
+  const { clearCredentials, setSelectedUser } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
   const handleLogout = async (e: any) => {
@@ -37,6 +38,8 @@ const AuthLayout = () => {
       await logout(undefined, {
         onSuccess: (data) => {
           clearCredentials();
+          setSelectedUser(null);
+          disconnectSocket();
           toast.success(data.message);
           navigate("/", {
             replace: true,

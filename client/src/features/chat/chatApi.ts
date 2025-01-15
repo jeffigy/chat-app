@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
+import { subscribeToMessages } from "@/lib/socket";
 import useStore from "@/store/useStore";
 import { SendMessage } from "@/types/message";
 
@@ -8,12 +9,21 @@ export const fetchChatList = async () => {
 };
 
 export const fetchChatMessages = async ({ id }: { id: string | undefined }) => {
-  return (await axiosInstance.get(`${BASE_URL}/${id}`)).data;
+  const { setMessages } = useStore.getState();
+  const { data: messages } = await axiosInstance.get(`${BASE_URL}/${id}`);
+  setMessages(messages);
+  subscribeToMessages();
+  return messages;
 };
 
 export const sendMessage = async ({ data }: { data: SendMessage }) => {
-  const { selectedUser } = useStore.getState();
+  const { selectedUser, messages, setMessages } = useStore.getState();
 
-  return (await axiosInstance.post(`${BASE_URL}/${selectedUser?.id}`, data))
-    .data;
+  const response = await axiosInstance.post(
+    `${BASE_URL}/${selectedUser?.id}`,
+    data,
+  );
+  setMessages([...messages, response.data]);
+
+  response.data;
 };

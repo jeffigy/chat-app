@@ -1,11 +1,16 @@
 import useFormattedMessageTime from "@/hooks/useFormattedMessageTIme";
 import useStore from "@/store/useStore";
 import { Message as MessageType } from "@/types/message";
-import { useRef } from "react";
 
-const Message = ({ message }: { message: MessageType }) => {
+const Message = ({
+  message,
+  messageEndRef,
+}: {
+  message: MessageType;
+  messageEndRef: any;
+}) => {
   const { authUser, selectedUser } = useStore.getState();
-  const messageEndRef = useRef(null);
+
   const createdAt = useFormattedMessageTime(message.createdAt);
   if (!authUser || !selectedUser || !message) return null;
 

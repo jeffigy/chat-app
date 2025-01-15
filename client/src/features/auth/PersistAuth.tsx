@@ -2,6 +2,7 @@ import useStore from "@/store/useStore";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { useRefreshMutation } from "./authMutation";
+import { connectSocket } from "@/lib/socket";
 import { Loader } from "lucide-react";
 
 const PersistAuth = () => {
@@ -36,6 +37,12 @@ const PersistAuth = () => {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      connectSocket();
+    }
+  }, [token]);
 
   if (isCheckingAuth || isPending)
     return (
